@@ -1,21 +1,18 @@
 import { prisma } from "../lib/prisma.js";
 import { createFeedbackSchema } from "../dtos/feedbackDto.js";
+import { AppError } from "../utils/AppError.js";
 
 export async function createFeedback(req, res) {
   const projectId = Number(req.params.id);
-  const result = createFeedbackSchema.safeParse(req.body);
-
-  if (!result.success) {
-    return res.status(400).json({ errors: result.error.issues });
-  }
+  const result = createFeedbackSchema.parse(req.body);
 
   const project = await prisma.project.findUnique({ where: { id: projectId } });
   if (!project) {
-    return res.status(404).json({ error: "Projeto não encontrado" });
+    throw new AppError("Projeto não encontrado", 404);
   }
 
   await prisma.feedback.create({
-    data: { ...result.data, projectId },
+    data: { ...result, projectId },
   });
 
   const feedbacks = await prisma.feedback.findMany({ where: { projectId } });

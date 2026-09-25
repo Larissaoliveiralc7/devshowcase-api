@@ -1,14 +1,11 @@
 import { prisma } from "../lib/prisma.js";
 import { createProjectSchema } from "../dtos/projectDto.js";
+import { AppError } from "../utils/AppError.js";
 
 export async function createProject(req, res) {
-  const result = createProjectSchema.safeParse(req.body);
+  const result = createProjectSchema.parse(req.body);
 
-  if (!result.success) {
-    return res.status(400).json({ errors: result.error.issues });
-  }
-
-  const { title, description, repoUrl, profileId, technologyIds } = result.data;
+  const { title, description, repoUrl, profileId, technologyIds } = result;
 
   const project = await prisma.project.create({
     data: {
@@ -61,7 +58,7 @@ export async function upvoteProject(req, res) {
 
   const project = await prisma.project.findUnique({ where: { id } });
   if (!project) {
-    return res.status(404).json({ error: "Projeto não encontrado" });
+    throw new AppError("Projeto não encontrado", 404);
   }
 
   const updated = await prisma.project.update({

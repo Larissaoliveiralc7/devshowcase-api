@@ -1,3 +1,5 @@
+import swaggerUi from "swagger-ui-express";
+import { swaggerDocument } from "./docs/swagger.js";
 import "dotenv/config";
 import express from "express";
 import profileRoutes from "./routes/profileRoutes.js";
@@ -13,6 +15,7 @@ app.get("/", (req, res) => {
   res.json({ message: "DevShowcase API está no ar 🚀" });
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/profiles", profileRoutes);
 app.use("/api/technologies", technologyRoutes);
 app.use("/api/projects", projectRoutes);
