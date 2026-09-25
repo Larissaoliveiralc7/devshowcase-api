@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import profileRoutes from "./routes/profileRoutes.js";
 import technologyRoutes from "./routes/technologyRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/profiles", profileRoutes);
 app.use("/api/technologies", technologyRoutes);
+app.use("/api/projects", projectRoutes);
 
 const PORT = process.env.PORT || 3000;
 
