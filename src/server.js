@@ -3,6 +3,7 @@ import express from "express";
 import profileRoutes from "./routes/profileRoutes.js";
 import technologyRoutes from "./routes/technologyRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -15,6 +16,8 @@ app.get("/", (req, res) => {
 app.use("/api/profiles", profileRoutes);
 app.use("/api/technologies", technologyRoutes);
 app.use("/api/projects", projectRoutes);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 

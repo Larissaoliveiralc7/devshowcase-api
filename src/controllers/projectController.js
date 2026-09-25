@@ -29,11 +29,45 @@ export async function createProject(req, res) {
 }
 
 export async function getProjects(req, res) {
-  const projects = await prisma.project.findMany({
-    include: {
-      technologies: true,
-    },
+  const { technology, page = 1, limit = 10 } = req.query;
+
+  const where = technology
+    ? { technologies: { some: { name: technology } } }
+    : {};
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const [projects, total] = await Promise.all([
+    prisma.project.findMany({
+      where,
+      include: { technologies: true },
+      skip,
+      take: Number(limit),
+    }),
+    prisma.project.count({ where }),
+  ]);
+
+  res.json({
+    data: projects,
+    page: Number(page),
+    limit: Number(limit),
+    total,
+    totalPages: Math.ceil(total / Number(limit)),
+  });
+}
+
+export async function upvoteProject(req, res) {
+  const id = Number(req.params.id);
+
+  const project = await prisma.project.findUnique({ where: { id } });
+  if (!project) {
+    return res.status(404).json({ error: "Projeto não encontrado" });
+  }
+
+  const updated = await prisma.project.update({
+    where: { id },
+    data: { upvotes: { increment: 1 } },
   });
 
-  res.json(projects);
+  res.json(updated);
 }
