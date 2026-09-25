@@ -35,6 +35,8 @@ model Project {
   description String?
   repoUrl     String
   createdAt   DateTime     @default(now())
+  averageRating Float        @default(0)
+  upvotes       Int          @default(0)
 
   profile     Profile      @relation(fields: [profileId], references: [id])
   profileId   Int
